@@ -1,6 +1,5 @@
 port: 8080
 
-
 spring:
   datasource:
     url: jdbc:h2:mem:mydb
@@ -17,3 +16,7 @@ spring:
       console:
         path: /h2-console
         enabled: true
+
+logging:
+  level:
+    root: INFO
