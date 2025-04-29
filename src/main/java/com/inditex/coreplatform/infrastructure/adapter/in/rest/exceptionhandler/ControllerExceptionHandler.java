@@ -16,12 +16,15 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpError> handleGlobalException(Exception ex, WebRequest request) {
-        HttpError error = new HttpError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "INTERNAL_SERVER_ERROR",
-                "An unexpected error occurred. Error: " + ex.getMessage());
-        error.setEndpoint(getEndpoint(request));
-        error.setSessionId(request.getSessionId());
-        logger.error("Detected in global exception handler: {}", error);
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        HttpError httpError = HttpError.builder()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .errorCodeDescription(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message(ex.getMessage())
+                .endpoint(getEndpoint(request))
+                .sessionId(request.getSessionId())
+                .build();
+        logger.error("Detected error in controller exception handler", ex);
+        return new ResponseEntity<>(httpError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private String getEndpoint(WebRequest request) {

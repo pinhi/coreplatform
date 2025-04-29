@@ -11,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -32,17 +32,17 @@ public class PricesControllerTest {
     @Test
     public void shouldReturnPricesDTOWhenValidInput_aka_prueba1() {
         // GIVEN
-        String startDate = "2020-06-15 16.00.00";
+        String startDate = "2020-06-15T16:00:00";
         Long productId = 4L;
         Long brandId = 1L;
 
         PricesDTO expectedPricesDTO = new PricesDTO();
         expectedPricesDTO.setBrandId(brandId);
         expectedPricesDTO.setProductId(productId);
-        expectedPricesDTO.setStartDate(stringDateToLocalDateTime(startDate));
+        expectedPricesDTO.setStartDate(LocalDateTime.parse(startDate));
 
         when(pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId))
-                .thenReturn(expectedPricesDTO);
+                .thenReturn(Optional.of(expectedPricesDTO));
 
         // WHEN
         ResponseEntity<PricesDTO> foundPrices = pricesController.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
@@ -60,7 +60,7 @@ public class PricesControllerTest {
     @Test
     public void shouldThrowExceptionWhenServiceFails() {
         // GIVEN
-        String startDate = "2020-06-15 16.00.00";
+        String startDate = "2020-06-15T16:00:00";
         Long productId = 4L;
         Long brandId = 1L;
 
@@ -75,8 +75,4 @@ public class PricesControllerTest {
         assertEquals("Service error", exception.getMessage());
     }
 
-    private LocalDateTime stringDateToLocalDateTime(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss");
-        return LocalDateTime.parse(date, formatter);
-    }
 }

@@ -14,8 +14,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class PricesServiceImplTest {
@@ -40,7 +42,7 @@ class PricesServiceImplTest {
     @Test
     void testFindPricesByStartDateAndProductIdAndBrandId() {
         // given
-        String startDate = "2020-06-15 16:00:00";
+        String startDate = "2020-06-15T16:00:00";
         Long productId = 35455L;
         Long brandId = 1L;
 
@@ -68,17 +70,19 @@ class PricesServiceImplTest {
                 .price(new BigDecimal("35.50"))
                 .build();
 
-        when(pricesRepository.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId))
-                .thenReturn(expectedEntity);
-        when(pricesDomainEntityMapper.mapPricesEntityToPrices(expectedEntity)).thenReturn(expectedDomain);
-        when(pricesDomainDTOMapper.mapPricesToPricesDTO(expectedDomain)).thenReturn(expectedDto);
+        when(pricesRepository.findPricesByStartDateAndProductIdAndBrandId(LocalDateTime.parse(startDate), productId, brandId))
+                .thenReturn(Optional.ofNullable(expectedEntity));
+        when(pricesDomainEntityMapper.toDomain(expectedEntity)).thenReturn(expectedDomain);
+        when(pricesDomainDTOMapper.toDTO(expectedDomain)).thenReturn(expectedDto);
 
         // when
-        PricesDTO result = pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
+        Optional<PricesDTO> resultOpt = pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
+        PricesDTO result = resultOpt.orElse(null);
 
         // then
+        assertNotNull(result);
         assertEquals(expectedDto, result);
-        verify(pricesRepository, times(1)).findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
+        verify(pricesRepository, times(1)).findPricesByStartDateAndProductIdAndBrandId(LocalDateTime.parse(startDate), productId, brandId);
         assertEquals(LocalDateTime.parse("2020-06-15T16:00:00"), result.getStartDate());
         assertEquals(productId, result.getProductId());
         assertEquals(brandId, result.getBrandId());

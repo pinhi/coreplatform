@@ -19,7 +19,7 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * TDD: He trabajado muy poco con esto, porque en la mayoria de trabajos hay que entregar todo ayer. Me gusta. Puede verse la intencion en el history de git.
 * Git flow: Con lo que más cómodo me siento trabajando.
 * Open Api: Usaré Swagger, porque me gusta como documenta y lo facil que se lee, pero usaré un proyecto de Postman para consumirlo.
-* Controller: 
+* : 
 * Interface: 
 
 ### Tiempo

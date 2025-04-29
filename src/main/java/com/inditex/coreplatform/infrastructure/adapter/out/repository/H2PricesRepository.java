@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Repository
 public interface H2PricesRepository extends JpaRepository<PricesEntity, Long>, PricesRepository {
 
     @Override
     @Query("SELECT p FROM PricesEntity p WHERE p.startDate = :startDate AND p.productId = :productId AND p.brandId = :brandId")
-    PricesEntity findPricesByStartDateAndProductIdAndBrandId(@Param("startDate") String startDate,
+    Optional<PricesEntity> findPricesByStartDateAndProductIdAndBrandId(@Param("startDate") LocalDateTime startDate,
                                                              @Param("productId") Long productId,
                                                              @Param("brandId") Long brandId);
 }

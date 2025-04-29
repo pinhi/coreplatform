@@ -13,12 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PricesController.class)
 public class PricesControllerIntegrationTest {
@@ -40,7 +40,7 @@ public class PricesControllerIntegrationTest {
         mockDto.setStartDate(LocalDateTime.parse(expectedStartingDate));
 
         Mockito.when(pricesService.findPricesByStartDateAndProductIdAndBrandId(
-                expectedStartingDate, 35455L, 1L)).thenReturn(mockDto);
+                expectedStartingDate, 35455L, 1L)).thenReturn(Optional.of(mockDto));
 
         mockMvc.perform(get("/prices/")
                         .param("startDate", expectedStartingDate)
@@ -51,11 +51,6 @@ public class PricesControllerIntegrationTest {
                 .andExpect(jsonPath("$.brandId", is(1)))
                 .andExpect(jsonPath("$.price", is(35.50)))
                 .andExpect(jsonPath("$.startDate", is(expectedStartingDate)));
-    }
-
-    private LocalDateTime stringDateToLocalDateTime(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss");
-        return LocalDateTime.parse(date, formatter);
     }
 
     @TestConfiguration
