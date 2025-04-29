@@ -22,8 +22,8 @@ class H2PricesRepositoryIntegrationTest {
     void testFindPricesByStartDateAndProductIdAndBrandId() {
         // given
         PricesEntity entity = PricesEntity.builder()
-                .brandId(1L)
-                .productId(35455L)
+                .brandId(7L)
+                .productId(7L)
                 .startDate(LocalDateTime.parse("2020-06-15T00:00:00"))
                 .endDate(LocalDateTime.parse("2020-06-15T23:59:59"))
                 .price(new BigDecimal("35.50"))

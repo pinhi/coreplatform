@@ -30,7 +30,7 @@ public class PricesControllerTest {
     }
 
     @Test
-    public void shouldReturnPricesDTOWhenValidInput_aka_prueba1() {
+    public void shouldReturnPricesDTOWhenValidInput() {
         // GIVEN
         String startDate = "2020-06-15T16:00:00";
         Long productId = 4L;
