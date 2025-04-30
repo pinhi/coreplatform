@@ -2,12 +2,15 @@ package com.inditex.coreplatform.infrastructure.adapter.in.rest;
 
 import com.inditex.coreplatform.application.service.PricesService;
 import com.inditex.coreplatform.application.service.dto.PricesDTO;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import static com.inditex.coreplatform.common.utils.Constants.STANDARD_LOCAL_DAT
 @RequestMapping("/prices")
 public class PricesController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PricesController.class.getName());
+
     @Autowired
     private PricesService pricesService;
 
@@ -30,6 +35,7 @@ public class PricesController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PricesDTO.class))),
             @ApiResponse(responseCode = "404", description = "Not found - The prices was not found", content = @Content(mediaType = "application/json"))
     })
+    @CircuitBreaker(name = "pricesCircuitBreaker", fallbackMethod = "pricesFallback")
     @GetMapping("/")
     public ResponseEntity<PricesDTO> findPricesByStartDateAndProductIdAndBrandId(
             @Parameter(description = "Start date of the price", required = true, example = "2023-04-29T11:59:32")
@@ -41,5 +47,10 @@ public class PricesController {
         return pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    public ResponseEntity<PricesDTO> pricesFallback(String startDate, Long productId, Long brandId, Throwable throwable) {
+        logger.warn("Fallback method executed for findPricesByStartDateAndProductIdAndBrandId with parameters startDate {}, productId {} and brandId {}", startDate, productId, brandId, throwable);
+        return ResponseEntity.status(503).build();
     }
 }

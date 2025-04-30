@@ -30,3 +30,29 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      pricesCircuitBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 20s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,circuitbreakers
+  health:
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true

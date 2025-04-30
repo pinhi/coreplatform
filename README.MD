@@ -2,6 +2,8 @@
 Some generic description of the project.
 * Swagger url: http://localhost:8080/swagger-ui.html
 * H2-console url: http://localhost:8080/h2-console
+* Circuit-breakers defined url: http://localhost:8080/actuator/circuitbreakers
+* Health url: http://localhost:8080/actuator/health
 
 ## Comentarios
 Antes de nada, suelo programar en inglés todo, pero escribir los comentarios creo que es una tonteria para este caso. Además quiero expresarme libremente.
@@ -30,6 +32,15 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * 2º commit: 30m (quise crear un converter porque las fechas de la tabla dada, no coinciden con H2, pensé en añadir un converter, pero creo que me llevaría mas timpo del que no tengo ahora mismo)
 * 3* commit: +-4h
 * 4º commit: +-2h
+* 5º commit: +-2h
+
+### curl para testeo
+* Petición correcta: curl --request GET \
+  --url 'http://localhost:8080/prices/?startDate=2020-06-14T00%3A00%3A00&productId=35455&brandId=1'
+* Petición incorrecta (la fecha no es válida): curl --request GET \
+  --url 'http://localhost:8080/prices/?startDate=not-a-date&productId=35455&brandId=1' 
+
+Con la petición incorrecta ejecutada 3 veces, forzamos al circuit breaker a actuar, con la correcta verificamos que esta 20s desactivada y luego veremos que solo unas pocas pueden ejecutarse (3 request) -> CLOSED, OPEN, HALF-OPEN
 
 ### No desarrollado todavía - Próximos desarrollos
 
@@ -37,3 +48,4 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * Descarto por ahora la idea de los comentarios adicional. La aplicación debe aceptar otros productos ya que no querido crear otras tablas y relacionarlas entre si. Debería. Como deberia crear un maestro para las currency, pero no estoy interesado en hacerlo ahora, quizá mas adelante.
 * Descarto por ahora la idea de los comentarios adicional. No quiero usar librerias para los rest, sin contar con lo que ya uso ahora que me proporciona spring.
 * Ampliar el ExceptionHandler, estaría bien, para personalizar mas todavia los errores más comunes, como los de base de datos usando @ExceptionHandler(PatataException.class)
+* Viendo la docu de resilence4j veo que hay patrones que vendrían bien al desarrollo (como el retry), pero los descarto. Tambien descarto sus tests, porque tendria que meterme en otras dependencias como wiremocks
