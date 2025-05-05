@@ -37,3 +37,4 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * Descarto por ahora la idea de los comentarios adicional. La aplicación debe aceptar otros productos ya que no querido crear otras tablas y relacionarlas entre si. Debería. Como deberia crear un maestro para las currency, pero no estoy interesado en hacerlo ahora, quizá mas adelante.
 * Descarto por ahora la idea de los comentarios adicional. No quiero usar librerias para los rest, sin contar con lo que ya uso ahora que me proporciona spring.
 * Ampliar el ExceptionHandler, estaría bien, para personalizar mas todavia los errores más comunes, como los de base de datos usando @ExceptionHandler(PatataException.class)
+* Finamente iba a terminar de añadir la caché en el rpoyecto, tengo una rama de pruebas, lo descarto, seguramente querráis la prueba ahora.
