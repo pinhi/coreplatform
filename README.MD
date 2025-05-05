@@ -49,3 +49,4 @@ Con la petición incorrecta ejecutada 3 veces, forzamos al circuit breaker a act
 * Descarto por ahora la idea de los comentarios adicional. No quiero usar librerias para los rest, sin contar con lo que ya uso ahora que me proporciona spring.
 * Ampliar el ExceptionHandler, estaría bien, para personalizar mas todavia los errores más comunes, como los de base de datos usando @ExceptionHandler(PatataException.class)
 * Viendo la docu de resilence4j veo que hay patrones que vendrían bien al desarrollo (como el retry), pero los descarto. Tambien descarto sus tests, porque tendria que meterme en otras dependencias como wiremocks
+* Finamente iba a terminar de añadir la caché en el rpoyecto, tengo una rama de pruebas, lo descarto, seguramente querráis la prueba ahora.
