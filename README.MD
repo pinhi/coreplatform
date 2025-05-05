@@ -24,6 +24,7 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * Git flow: Con lo que más cómodo me siento trabajando.
 * Open Api: Usaré Swagger, porque me gusta como documenta y lo facil que se lee, pero usaré un proyecto de Postman para consumirlo.
 * Kafka: No es necesario en esta prueba. No tiene sentido. 
+* Caché: Uso Cacheable para los métodos de lectura. Me gustaría también usar CachePut para actualizarlos datos de la cache, que entraría en sinergia conque dejé la end-date nullable. Para simular que un producto aún no tenga el fin de fecha asignado, pero al no tener método de escritura, lo ignoro. Además escogí caffeine por su eficiencia como gestor de caché
 
 ### Tiempo
 
@@ -33,6 +34,8 @@ Siendo sincero, agradezco esta oportunidad. Me he tomado la prueba como una opor
 * 3* commit: +-4h
 * 4º commit: +-2h
 * 5º commit: +-2h
+* 6º commit: +-3h
+* 7º commit: +-30m
 
 ### curl para testeo
 * Petición correcta: curl --request GET \

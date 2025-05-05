@@ -6,11 +6,14 @@ import com.inditex.coreplatform.domain.port.PricesRepository;
 import com.inditex.coreplatform.infrastructure.adapter.in.rest.mapper.PricesDomainDTOMapper;
 import com.inditex.coreplatform.infrastructure.adapter.out.entity.PricesEntity;
 import com.inditex.coreplatform.infrastructure.adapter.out.mapper.PricesDomainEntityMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +37,7 @@ class PricesServiceImplTest {
     @InjectMocks
     private PricesServiceImpl pricesService;
 
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -46,29 +50,9 @@ class PricesServiceImplTest {
         Long productId = 35455L;
         Long brandId = 1L;
 
-        PricesEntity expectedEntity = PricesEntity.builder()
-                .brandId(brandId)
-                .productId(productId)
-                .startDate(LocalDateTime.parse("2020-06-15T16:00:00"))
-                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
-                .price(new BigDecimal("35.50"))
-                .build();
-
-        Prices expectedDomain = Prices.builder()
-                .brandId(brandId)
-                .productId(productId)
-                .startDate(LocalDateTime.parse("2020-06-15T16:00:00"))
-                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
-                .price(new BigDecimal("35.50"))
-                .build();
-
-        PricesDTO expectedDto = PricesDTO.builder()
-                .brandId(brandId)
-                .productId(productId)
-                .startDate(LocalDateTime.parse("2020-06-15T16:00:00"))
-                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
-                .price(new BigDecimal("35.50"))
-                .build();
+        PricesEntity expectedEntity = getPricesEntityMock(brandId, productId, startDate);
+        Prices expectedDomain = getPricesDomainMock(brandId, productId, startDate);
+        PricesDTO expectedDto = getPricesDTOMock(brandId, productId, startDate);
 
         when(pricesRepository.findPricesByStartDateAndProductIdAndBrandId(LocalDateTime.parse(startDate), productId, brandId))
                 .thenReturn(Optional.ofNullable(expectedEntity));
@@ -86,5 +70,64 @@ class PricesServiceImplTest {
         assertEquals(LocalDateTime.parse("2020-06-15T16:00:00"), result.getStartDate());
         assertEquals(productId, result.getProductId());
         assertEquals(brandId, result.getBrandId());
+    }
+
+    @Test
+    void testFindPricesByStartDateAndProductIdAndBrandId_cache() {
+        // given
+        String startDate = "2020-06-15T16:00:00";
+        Long productId = 35455L;
+        Long brandId = 1L;
+
+        PricesEntity expectedEntity = getPricesEntityMock(brandId, productId, startDate);
+        Prices expectedDomain = getPricesDomainMock(brandId, productId, startDate);
+        PricesDTO expectedDto = getPricesDTOMock(brandId, productId, startDate);
+
+        when(pricesRepository.findPricesByStartDateAndProductIdAndBrandId(any(), any(), any()))
+                .thenReturn(Optional.ofNullable(expectedEntity));
+        when(pricesDomainEntityMapper.toDomain(expectedEntity)).thenReturn(expectedDomain);
+        when(pricesDomainDTOMapper.toDTO(expectedDomain)).thenReturn(expectedDto);
+
+        // when
+        Optional<PricesDTO> firstInvocation = pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
+        Optional<PricesDTO> secondInvocation = pricesService.findPricesByStartDateAndProductIdAndBrandId(startDate, productId, brandId);
+
+        // then
+        Assertions.assertTrue(firstInvocation.isPresent());
+        Assertions.assertTrue(secondInvocation.isPresent());
+        Assertions.assertSame(firstInvocation.get(), secondInvocation.get());
+        Mockito.verify(pricesRepository, Mockito.times(1))
+                .findPricesByStartDateAndProductIdAndBrandId(LocalDateTime.parse(startDate), productId, brandId);
+    }
+
+
+    private static PricesDTO getPricesDTOMock(Long brandId, Long productId, String startDate) {
+        return PricesDTO.builder()
+                .brandId(brandId)
+                .productId(productId)
+                .startDate(LocalDateTime.parse(startDate))
+                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
+                .price(new BigDecimal("35.50"))
+                .build();
+    }
+
+    private static Prices getPricesDomainMock(Long brandId, Long productId, String startDate) {
+        return Prices.builder()
+                .brandId(brandId)
+                .productId(productId)
+                .startDate(LocalDateTime.parse(startDate))
+                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
+                .price(new BigDecimal("35.50"))
+                .build();
+    }
+
+    private static PricesEntity getPricesEntityMock(Long brandId, Long productId, String startDate) {
+        return PricesEntity.builder()
+                .brandId(brandId)
+                .productId(productId)
+                .startDate(LocalDateTime.parse(startDate))
+                .endDate(LocalDateTime.parse("2020-06-15T18:00:00"))
+                .price(new BigDecimal("35.50"))
+                .build();
     }
 }

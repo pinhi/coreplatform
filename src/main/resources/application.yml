@@ -21,6 +21,11 @@ spring:
       path: /h2-console
       enabled: true
 
+  cache:
+    cache-names: findPricesCache
+    caffeine:
+      spec: maximumSize=5,expireAfterWrite=10m
+
 logging:
   level:
     root: INFO

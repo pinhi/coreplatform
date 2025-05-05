@@ -6,6 +6,7 @@ import com.inditex.coreplatform.domain.port.PricesRepository;
 import com.inditex.coreplatform.infrastructure.adapter.in.rest.mapper.PricesDomainDTOMapper;
 import com.inditex.coreplatform.infrastructure.adapter.out.mapper.PricesDomainEntityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class PricesServiceImpl implements PricesService {
     private PricesRepository pricesRepository;
 
     @Override
+    @Cacheable("findPricesCache")
     public Optional<PricesDTO> findPricesByStartDateAndProductIdAndBrandId(String startDate, Long productId, Long brandId) {
         return pricesRepository.findPricesByStartDateAndProductIdAndBrandId(LocalDateTime.parse(startDate), productId, brandId)
                 .map(pricesDomainEntityMapper::toDomain)
